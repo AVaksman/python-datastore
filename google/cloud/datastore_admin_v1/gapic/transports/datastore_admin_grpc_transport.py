@@ -16,13 +16,14 @@
 
 
 import google.api_core.grpc_helpers
+import google.api_core.operations_v1
 
-from google.cloud.datastore_v1.proto import datastore_pb2_grpc
+from google.cloud.datastore_admin_v1.proto import datastore_admin_pb2_grpc
 
 
-class DatastoreGrpcTransport(object):
+class DatastoreAdminGrpcTransport(object):
     """gRPC transport class providing stubs for
-    google.datastore.v1 Datastore API.
+    google.datastore.admin.v1 DatastoreAdmin API.
 
     The transport provides access to the raw gRPC stubs,
     which can be used to take advantage of advanced
@@ -74,7 +75,16 @@ class DatastoreGrpcTransport(object):
 
         # gRPC uses objects called "stubs" that are bound to the
         # channel and provide a basic method for each RPC.
-        self._stubs = {"datastore_stub": datastore_pb2_grpc.DatastoreStub(channel)}
+        self._stubs = {
+            "datastore_admin_stub": datastore_admin_pb2_grpc.DatastoreAdminStub(channel)
+        }
+
+        # Because this API includes a method that returns a
+        # long-running operation (proto: google.longrunning.Operation),
+        # instantiate an LRO client.
+        self._operations_client = google.api_core.operations_v1.OperationsClient(
+            channel
+        )
 
     @classmethod
     def create_channel(
@@ -109,95 +119,66 @@ class DatastoreGrpcTransport(object):
         return self._channel
 
     @property
-    def lookup(self):
-        """Return the gRPC stub for :meth:`DatastoreClient.lookup`.
+    def export_entities(self):
+        """Return the gRPC stub for :meth:`DatastoreAdminClient.export_entities`.
 
-        Looks up entities by key.
+        Exports a copy of all or a subset of entities from Google Cloud Datastore
+        to another storage system, such as Google Cloud Storage. Recent updates to
+        entities may not be reflected in the export. The export occurs in the
+        background and its progress can be monitored and managed via the
+        Operation resource that is created. The output of an export may only be
+        used once the associated operation is done. If an export operation is
+        cancelled before completion it may leave partial data behind in Google
+        Cloud Storage.
 
         Returns:
             Callable: A callable which accepts the appropriate
                 deserialized request object and returns a
                 deserialized response object.
         """
-        return self._stubs["datastore_stub"].Lookup
+        return self._stubs["datastore_admin_stub"].ExportEntities
 
     @property
-    def run_query(self):
-        """Return the gRPC stub for :meth:`DatastoreClient.run_query`.
+    def import_entities(self):
+        """Return the gRPC stub for :meth:`DatastoreAdminClient.import_entities`.
 
-        Queries for entities.
+        Imports entities into Google Cloud Datastore. Existing entities with the
+        same key are overwritten. The import occurs in the background and its
+        progress can be monitored and managed via the Operation resource that is
+        created. If an ImportEntities operation is cancelled, it is possible
+        that a subset of the data has already been imported to Cloud Datastore.
 
         Returns:
             Callable: A callable which accepts the appropriate
                 deserialized request object and returns a
                 deserialized response object.
         """
-        return self._stubs["datastore_stub"].RunQuery
+        return self._stubs["datastore_admin_stub"].ImportEntities
 
     @property
-    def reserve_ids(self):
-        """Return the gRPC stub for :meth:`DatastoreClient.reserve_ids`.
+    def get_index(self):
+        """Return the gRPC stub for :meth:`DatastoreAdminClient.get_index`.
 
-        Prevents the supplied keys' IDs from being auto-allocated by Cloud
-        Datastore.
+        Gets an index.
 
         Returns:
             Callable: A callable which accepts the appropriate
                 deserialized request object and returns a
                 deserialized response object.
         """
-        return self._stubs["datastore_stub"].ReserveIds
+        return self._stubs["datastore_admin_stub"].GetIndex
 
     @property
-    def begin_transaction(self):
-        """Return the gRPC stub for :meth:`DatastoreClient.begin_transaction`.
+    def list_indexes(self):
+        """Return the gRPC stub for :meth:`DatastoreAdminClient.list_indexes`.
 
-        Begins a new transaction.
-
-        Returns:
-            Callable: A callable which accepts the appropriate
-                deserialized request object and returns a
-                deserialized response object.
-        """
-        return self._stubs["datastore_stub"].BeginTransaction
-
-    @property
-    def commit(self):
-        """Return the gRPC stub for :meth:`DatastoreClient.commit`.
-
-        Commits a transaction, optionally creating, deleting or modifying some
-        entities.
+        Lists the indexes that match the specified filters.  Datastore uses an
+        eventually consistent query to fetch the list of indexes and may
+        occasionally return stale results.
 
         Returns:
             Callable: A callable which accepts the appropriate
                 deserialized request object and returns a
                 deserialized response object.
         """
-        return self._stubs["datastore_stub"].Commit
-
-    @property
-    def rollback(self):
-        """Return the gRPC stub for :meth:`DatastoreClient.rollback`.
-
-        Rolls back a transaction.
-
-        Returns:
-            Callable: A callable which accepts the appropriate
-                deserialized request object and returns a
-                deserialized response object.
-        """
-        return self._stubs["datastore_stub"].Rollback
-
-    @property
-    def allocate_ids(self):
-        """Return the gRPC stub for :meth:`DatastoreClient.allocate_ids`.
-
-        Allocates IDs for the given keys, which is useful for referencing an entity
-        before it is inserted.
-
-        Returns:
-            Callable: A callable which accepts the appropriate
-                deserialized request object and returns a
-                deserialized response object.
-        """
-        return self._stubs["datastore_stub"].AllocateIds
+        return self._stubs["datastore_admin_stub"].ListIndexes
