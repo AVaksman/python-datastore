@@ -173,7 +173,7 @@ class TestDatastoreClient(object):
         mode = enums.CommitRequest.Mode.MODE_UNSPECIFIED
         mutations = []
 
-        response = client.commit(project_id, mode, mutations)
+        response = client.commit(project_id=project_id, mode=mode, mutations=mutations)
         assert expected_response == response
 
         assert len(channel.requests) == 1
@@ -194,7 +194,7 @@ class TestDatastoreClient(object):
         mutations = []
 
         with pytest.raises(CustomException):
-            client.commit(project_id, mode, mutations)
+            client.commit(project_id=project_id, mode=mode, mutations=mutations)
 
     def test_rollback(self):
         # Setup Expected Response
